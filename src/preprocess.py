@@ -4,13 +4,12 @@ from scipy.interpolate import interp1d
 
 TARGET_LENGTH = 200
 
+ # Resample sequence to fixed length
 
 def resample_sequence(sequence, target_length=TARGET_LENGTH):
-    """
-    Resample sequence to fixed length
-    """
     original_length = sequence.shape[0]
 
+    #Convert all sequences into a common scale (0 to 1) before resizing    
     # Original time steps
     original_indices = np.linspace(0, 1, original_length)
 
@@ -19,7 +18,9 @@ def resample_sequence(sequence, target_length=TARGET_LENGTH):
 
     resampled = []
 
-    for i in range(sequence.shape[1]):  # for each feature
+     # Take each column → resize it → store it → combine all columns
+    
+    for i in range(sequence.shape[1]):  
         f = interp1d(original_indices, sequence[:, i], kind='linear')
         resampled_feature = f(target_indices)
         resampled.append(resampled_feature)
@@ -42,11 +43,7 @@ def preprocess_data(X):
         acc_mag = np.sqrt(ax**2 + ay**2 + az**2)
         gyro_mag = np.sqrt(gx**2 + gy**2 + gz**2)
 
-        # Add new features 
-        # Magnitude features
-        acc_mag = np.sqrt(ax**2 + ay**2 + az**2)
-        gyro_mag = np.sqrt(gx**2 + gy**2 + gz**2)
-
+    
         # Velocity (difference between steps)
         velocity = np.diff(seq, axis=0)
         velocity = np.vstack((velocity[0], velocity))  # keep same length
@@ -60,25 +57,19 @@ def preprocess_data(X):
 
     return np.array(processed)
 
+ # Normalize data using mean and std
 
 def normalize_data(X):
-    """
-    Normalize data using mean and std
-    """
     mean = X.mean(axis=(0, 1), keepdims=True)
     std = X.std(axis=(0, 1), keepdims=True)
-
     X_norm = (X - mean) / (std + 1e-8)
-
     return X_norm, mean, std
 
 
+    #Remove idle parts where movement is very low
+    
 def trim_sequence(seq, threshold=0.02):
-    """
-    Remove idle parts where movement is very low
-    """
     magnitude = np.linalg.norm(seq, axis=1)
-
     active = magnitude > threshold
 
     if np.any(active):

@@ -34,7 +34,7 @@ def load_data():
 
                     df = pd.read_csv(file_path)
 
-                    # Rename columns
+                    # Rename columns- data standardization
                     df = df.rename(columns={
                         "gFx": "ax",
                         "gFy": "ay",
@@ -44,7 +44,7 @@ def load_data():
                         "wz": "gz"
                     })
 
-                    # Fix time
+                    # Fix time- time column is normalized
                     df["time"] = df["time"] - df["time"].iloc[0]
 
                     # Select columns

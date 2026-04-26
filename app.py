@@ -20,13 +20,13 @@ std = np.load("model/std.npy")
 def preprocess_file(df):
     # Rename columns
     df = df.rename(columns={
-        "gFx": "ax",
-        "gFy": "ay",
-        "gFz": "az",
-        "wx": "gx",
-        "wy": "gy",
-        "wz": "gz"
-    })
+    # Accelerometer (handle both cases)
+    "gFx": "ax", "gFy": "ay", "gFz": "az",
+    "aFx": "ax", "aFy": "ay", "aFz": "az",
+
+    # Gyroscope
+    "wx": "gx", "wy": "gy", "wz": "gz"
+})
 
     df["time"] = df["time"] - df["time"].iloc[0]
 

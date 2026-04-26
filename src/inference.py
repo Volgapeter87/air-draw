@@ -12,16 +12,18 @@ std = np.load("model/std.npy")
 
 def preprocess_single_file(file_path):
     df = pd.read_csv(file_path)
-
+    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    
     # Rename columns
     df = df.rename(columns={
-        "gFx": "ax",
-        "gFy": "ay",
-        "gFz": "az",
-        "wx": "gx",
-        "wy": "gy",
-        "wz": "gz"
-    })
+    
+    # Accelerometer (handle both cases)
+    "gFx": "ax", "gFy": "ay", "gFz": "az",
+    "aFx": "ax", "aFy": "ay", "aFz": "az",
+
+    # Gyroscope
+    "wx": "gx", "wy": "gy", "wz": "gz"
+})
 
     # Fix time
     df["time"] = df["time"] - df["time"].iloc[0]
@@ -75,7 +77,7 @@ def predict(file_path):
 
 
 if __name__ == "__main__":
-    file_path = "sample.csv"  # change this
+    file_path = "sample.csv" 
 
     digit, conf = predict(file_path)
 
